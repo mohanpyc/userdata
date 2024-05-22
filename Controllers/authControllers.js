@@ -6,12 +6,13 @@ require('dotenv').config();
 exports.register = async (req, res) => {
   const { username, password } = req.body;
 
-  console.log('Register request received:', { username, password },'ji'); 
+  console.log('Register request received:', { username, password });
 
   try {
     let user = await User.findOne({ username });
 
     if (user) {
+      console.log('user already exists')
       return res.status(400).json({ msg: 'User already exists' });
     }
 
@@ -22,8 +23,12 @@ exports.register = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(password, salt);
-
+    console.log('passwod encrypted')
     await user.save();
+
+    console.log('user save method called')
+
+    console.log('User created with ID:', user.id);
 
     const payload = {
       user: {
@@ -48,18 +53,23 @@ exports.register = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
-  console.log('Register request received:', { username, password },'ji'); 
+  console.log('Login request received:', { username, password });
 
   try {
     let user = await User.findOne({ username });
 
     if (!user) {
+      console.log('user not found')
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
+
+    
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
+      console.log('password incorrect')
+
       return res.status(400).json({ msg: 'Invalid credentials' });
     }
 
@@ -78,8 +88,11 @@ exports.login = async (req, res) => {
         res.json({ token });
       }
     );
+
+    console.log('login successful')
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
   }
 };
+
