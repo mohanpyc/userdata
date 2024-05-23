@@ -42,7 +42,7 @@ exports.register = async (req, res) => {
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, user: { id: user.id, username: user.username } });
       }
     );
   } catch (err) {
@@ -85,7 +85,7 @@ exports.login = async (req, res) => {
       { expiresIn: 360000 },
       (err, token) => {
         if (err) throw err;
-        res.json({ token });
+        res.json({ token, user: { id: user.id, username: user.username } });
       }
     );
 
